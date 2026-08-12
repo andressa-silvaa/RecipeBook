@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using RecipeBook.Application.UseCases.User.Register;
 using RecipeBook.Communication;
 
 namespace RecipeBook.WebApi.Controllers;
@@ -11,7 +12,9 @@ public class UsersController : ControllerBase
     [HttpPost]
     public IActionResult Register([FromBody] RequestRegisterUser request)
     {
-        return Created(); //statusCode 201
+        var useCase = new RegisterUserUseCase();
+        useCase.Execute(request);
+        return Created();
     }
 }
 
