@@ -10,9 +10,8 @@ public class UsersController : ControllerBase
 {
 
     [HttpPost]
-    public IActionResult Register([FromBody] RequestRegisterUser request)
+    public IActionResult Register([FromBody] RequestRegisterUser request, [FromServices] IRegisterUserUseCase useCase)
     {
-        var useCase = new RegisterUserUseCase();
         useCase.Execute(request);
         return Created();
     }

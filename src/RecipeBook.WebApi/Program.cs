@@ -11,6 +11,9 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 builder.Services.AddSwaggerGen();
 
+RecipeBook.Infrastructure.DependencyInjectionExtension.AddInfrastructure(builder.Services);
+RecipeBook.Application.DependencyInjectionExtension.AddApplication(builder.Services);
+
 builder.Services.Configure<RequestLocalizationOptions>(options =>
 {
     var supportedCultures = new List<CultureInfo> { new("en"), new("es"), new("pt-BR") };
