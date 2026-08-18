@@ -1,5 +1,8 @@
 using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.Options;
+using RecipeBook.Application;
+using RecipeBook.Infrastructure;
+using RecipeBook.WebApi.Converters;
 using RecipeBook.WebApi.Filters;
 using System.Globalization;
 
@@ -7,12 +10,12 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new StringConverter));
 builder.Services.AddOpenApi();
 builder.Services.AddSwaggerGen();
 
-RecipeBook.Infrastructure.DependencyInjectionExtension.AddInfrastructure(builder.Services);
-RecipeBook.Application.DependencyInjectionExtension.AddApplication(builder.Services);
+builder.Services.AddInfrastructure();
+builder.Services.AddApplication();
 
 builder.Services.Configure<RequestLocalizationOptions>(options =>
 {
@@ -27,6 +30,8 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
 });
 
 builder.Services.AddMvc(options => options.Filters.Add<ExceptionFilter>());
+builder.Services.AddRouting(options => options.LowercaseUrls = true);
+
 var app = builder.Build();
 
 var localizationOptions = app.Services.GetRequiredService<IOptions<RequestLocalizationOptions>>();
