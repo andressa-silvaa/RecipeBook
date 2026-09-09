@@ -4,5 +4,5 @@ namespace RecipeBook.Application.UseCases.User.Register;
 
 public interface IRegisterUserUseCase
 {
-    void Execute(RequestRegisterUser request);
+    Task Execute(RequestRegisterUser request);
 }
