@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using RecipeBook.Domain.Repositories;
 using RecipeBook.Domain.Repositories.User;
 using RecipeBook.Domain.Security.PasswordHashing;
 using RecipeBook.Infrastructure.DataAccess;
@@ -12,13 +14,16 @@ public static class DependencyInjectionExtension
 {
     extension(IServiceCollection services)
     {
-        public void AddInfrastructure()
+        public void AddInfrastructure(IConfiguration configuration)
         {
             services.AddScoped<IPasswordHasher, Argon2PasswordHasher>();
             services.AddScoped<IUserWriteOnlyRepository, UserRepository>();
+            services.AddScoped<IUnityOfWork, UnityOfWork>();
+
             services.AddDbContext<RecipeBookDbContext>(config =>
             {
-                config.UseMySQL("");
+                var connectionString = configuration.GetConnectionString("Connection");
+                config.UseMySQL(connectionString!);
             });
         }
     }
