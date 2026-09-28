@@ -1,5 +1,6 @@
 ﻿using Mapster;
 using RecipeBook.Communication;
+using RecipeBook.Domain.Repositories;
 using RecipeBook.Domain.Repositories.User;
 using RecipeBook.Domain.Security.PasswordHashing;
 using RecipeBook.Exception.ExceptionsBase;
@@ -10,19 +11,23 @@ public class RegisterUserUseCase : IRegisterUserUseCase
 {
     private readonly IPasswordHasher _passwordHasher;
     private readonly IUserWriteOnlyRepository _userWriteOnlyRepository;
+    private readonly IUnityOfWork _unityOfWork;
 
-    public RegisterUserUseCase(IPasswordHasher passwordHasher, IUserWriteOnlyRepository userWriteOnlyRepository) 
+    public RegisterUserUseCase(IPasswordHasher passwordHasher, IUserWriteOnlyRepository userWriteOnlyRepository, IUnityOfWork unityOfWork) 
     { 
         _passwordHasher = passwordHasher;
         _userWriteOnlyRepository = userWriteOnlyRepository;
+        _unityOfWork = unityOfWork; 
     }
 
     public async Task Execute(RequestRegisterUser request) 
     {
         ValidateAndThrowOnFailures(request);
         var user = request.Adapt<Domain.Entities.User>();
-        user.Password = _passwordHasher.HashPassword(request.Password);
+        user.Password = _passwordHasher.HashPassword(request.Password); 
+
         await _userWriteOnlyRepository.Add(user);
+        await _unityOfWork.Commit();
     }
 
     private void ValidateAndThrowOnFailures(RequestRegisterUser request) 
