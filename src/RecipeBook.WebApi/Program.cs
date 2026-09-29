@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.Options;
 using RecipeBook.Application;
 using RecipeBook.Infrastructure;
+using RecipeBook.Infrastructure.Migrations;
 using RecipeBook.WebApi.Converters;
 using RecipeBook.WebApi.Filters;
 using System.Globalization;
@@ -51,4 +52,12 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+await ExecuteMigrations();
+
 app.Run();
+
+async Task ExecuteMigrations()
+{
+    await using var scope = app.Services.CreateAsyncScope();
+    DatabaseMigration.ExecuteMigrations(scope.ServiceProvider);
+}
