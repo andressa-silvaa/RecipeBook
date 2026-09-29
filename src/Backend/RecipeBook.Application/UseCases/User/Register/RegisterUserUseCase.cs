@@ -1,5 +1,6 @@
 ﻿using Mapster;
 using RecipeBook.Communication;
+using RecipeBook.Communication.Responses;
 using RecipeBook.Domain.Repositories;
 using RecipeBook.Domain.Repositories.User;
 using RecipeBook.Domain.Security.PasswordHashing;
@@ -20,7 +21,7 @@ public class RegisterUserUseCase : IRegisterUserUseCase
         _unityOfWork = unityOfWork; 
     }
 
-    public async Task Execute(RequestRegisterUser request) 
+    public async Task<ResponseRegisteredUserJson> Execute(RequestRegisterUser request) 
     {
         ValidateAndThrowOnFailures(request);
         var user = request.Adapt<Domain.Entities.User>();
@@ -28,6 +29,11 @@ public class RegisterUserUseCase : IRegisterUserUseCase
 
         await _userWriteOnlyRepository.Add(user);
         await _unityOfWork.Commit();
+
+        return new ResponseRegisteredUserJson
+        {
+            Name = user.Name
+        };
     }
 
     private void ValidateAndThrowOnFailures(RequestRegisterUser request) 
