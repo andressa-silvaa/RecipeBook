@@ -13,6 +13,7 @@
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/CommonTestUtilities/CommonTestUtilities.csproj" Id="cd549589-ac7b-40de-9045-ae81505a7a5c" />
+    <Project Path="tests/UseCases.Tests/UseCases.Tests.csproj" Id="385b982e-c05a-4d75-a797-4add181e505e" />
     <Project Path="tests/Validators.Tests/Validators.Tests.csproj" Id="58f6224e-1c0b-4dc5-8b73-f5b28e30c89e" />
   </Folder>
 </Solution>
