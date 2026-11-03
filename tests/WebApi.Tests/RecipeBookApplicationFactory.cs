@@ -26,7 +26,7 @@ public class RecipeBookApplicationFactory : WebApplicationFactory<Program>, IAsy
             {
                 var parameters = new Dictionary<string, string?>
                 {
-                    ["ConnectionStrings:DbConnection"] = _container.GetConnectionString()
+                    ["ConnectionStrings:Connection"] = _container.GetConnectionString()
                 };
                 configuration.AddInMemoryCollection(parameters);
             });
