@@ -61,3 +61,5 @@ async Task ExecuteMigrations()
     await using var scope = app.Services.CreateAsyncScope();
     DatabaseMigration.ExecuteMigrations(scope.ServiceProvider);
 }
+
+public partial class Program{}
