@@ -1,5 +1,8 @@
 ﻿using CommonTestUtilities.Requests;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using RecipeBook.Exception;
+using RecipeBook.Infrastructure.DataAccess;
 using Shouldly;
 using System.Globalization;
 using System.Net;
@@ -12,10 +15,24 @@ namespace WebApi.Tests.User.Register;
 public class RegisterUserTests : IClassFixture<RecipeBookApplicationFactory>
 {
     private const string REQUEST_URI = "/api/users";
+
     private readonly HttpClient _httpClient;
+    private readonly IServiceScopeFactory _scopeFactory;
+
     public RegisterUserTests(RecipeBookApplicationFactory factory)
     {
         _httpClient = factory.CreateClient();
+        _scopeFactory = factory.Services.GetRequiredService<IServiceScopeFactory>();
+    }
+
+    private async Task<bool> UserExists(string name, string email)
+    {
+        using var scope = _scopeFactory.CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<RecipeBookDbContext>();
+
+        return await dbContext.Users
+            .AsNoTracking()
+            .AnyAsync(user => user.Active && user.Name == name && user.Email == email);
     }
 
     [Fact]
@@ -31,6 +48,9 @@ public class RegisterUserTests : IClassFixture<RecipeBookApplicationFactory>
 
         responseData.RootElement.GetProperty("name").GetString().ShouldBe(request.Name);
         responseData.RootElement.GetProperty("tokens").GetProperty("accessToken").GetString().ShouldBeEmpty();
+
+        var userExists = await UserExists(request.Name, request.Email);
+        userExists.ShouldBeTrue();
     }
 
     [Theory]
@@ -55,5 +75,8 @@ public class RegisterUserTests : IClassFixture<RecipeBookApplicationFactory>
         var errorsList = responseData.RootElement.GetProperty("errors").EnumerateArray();
 
         errorsList.ShouldContain(error => error.GetString()!.Equals(expectedMessage));
+
+        var userExists = await UserExists(request.Name, request.Email);
+        userExists.ShouldBeFalse();
     }
 }
